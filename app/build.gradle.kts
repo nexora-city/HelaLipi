@@ -102,7 +102,7 @@ android {
         includeInBundle = false
     }
 
-    namespace = "lk.helalipi"
+    namespace = "helium314.keyboard.latin"
     lint {
         abortOnError = true
     }
