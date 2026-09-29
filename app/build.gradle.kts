@@ -10,7 +10,7 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "helium314.keyboard"
+        applicationId = "lk.helalipi"
         minSdk = 21
         targetSdk = 37
         versionCode = 4101
@@ -29,24 +29,22 @@ android {
             isDebuggable = false
             isJniDebuggable = false
         }
-        create("nouserlib") { // same as release, but does not allow the user to provide a library
+        create("nouserlib") {
             isMinifyEnabled = true
             isShrinkResources = false
             isDebuggable = false
             isJniDebuggable = false
         }
         debug {
-            // "normal" debug has minify for smaller APK to fit the GitHub 25 MB limit when zipped
-            // and for better performance in case users want to install a debug APK
             isMinifyEnabled = true
             isJniDebuggable = false
             applicationIdSuffix = ".debug"
         }
-        create("runTests") { // build variant for running tests on CI that skips tests known to fail
+        create("runTests") {
             isMinifyEnabled = false
             isJniDebuggable = false
         }
-        create("debugNoMinify") { // for faster builds in IDE
+        create("debugNoMinify") {
             isDebuggable = true
             isMinifyEnabled = false
             isJniDebuggable = false
@@ -56,16 +54,14 @@ android {
 
         androidComponents.onVariants { variant: ApplicationVariant ->
             if (variant.buildType == "debug") {
-                // got a little too big for GitHub after some dependency upgrades, so we remove the largest dictionary
                 variant.androidResources.ignoreAssetsPatterns = listOf("main_ro.dict")
                 variant.proguardFiles = emptyList()
-                //noinspection ProguardAndroidTxtUsage we intentionally use the "normal" file here
                 variant.proguardFiles.add(project.layout.buildDirectory.file(project.buildFile.parent + "/dontoptimize.pro"))
                 variant.proguardFiles.add(project.layout.buildDirectory.file(project.buildFile.parent + "/proguard-rules.pro"))
             }
             variant.outputs.forEach { output ->
                 if (output is com.android.build.api.variant.impl.VariantOutputImpl) {
-                    output.outputFileName = "HeliBoard_${defaultConfig.versionName}-${variant.buildType}.apk"
+                    output.outputFileName = "HelaLipi_${defaultConfig.versionName}-${variant.buildType}.apk"
                 }
             }
         }
@@ -86,7 +82,6 @@ android {
 
     packaging {
         jniLibs {
-            // shrinks APK by 3 MB, zipped size unchanged
             useLegacyPackaging = true
         }
     }
@@ -102,40 +97,32 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    // see https://github.com/HeliBorg/HeliBoard/issues/477
     dependenciesInfo {
         includeInApk = false
         includeInBundle = false
     }
 
-    namespace = "helium314.keyboard.latin"
+    namespace = "lk.helalipi"
     lint {
         abortOnError = true
     }
 }
 
 dependencies {
-    // androidx
-    implementation("androidx.core:core-ktx:1.17.0") // 1.18.0 requires minSdk 23
+    implementation("androidx.core:core-ktx:1.17.0")
     implementation("androidx.recyclerview:recyclerview:1.4.0")
     implementation("androidx.autofill:autofill:1.3.0")
     implementation("androidx.viewpager2:viewpager2:1.1.0")
-
-    // kotlin
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
-
-    // compose
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
-    implementation(platform("androidx.compose:compose-bom:2025.11.01")) // newer requires minSdk 23
+    implementation(platform("androidx.compose:compose-bom:2025.11.01"))
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
     "debugNoMinifyImplementation"("androidx.compose.ui:ui-tooling")
     implementation("androidx.navigation:navigation-compose:2.9.8")
-    implementation("sh.calvin.reorderable:reorderable:3.1.0") // for easier re-ordering
-    implementation("com.github.skydoves:colorpicker-compose:1.1.3") // for user-defined colors, newer requires minSdk 23
-
-    // test
+    implementation("sh.calvin.reorderable:reorderable:3.1.0")
+    implementation("com.github.skydoves:colorpicker-compose:1.1.3")
     testImplementation(kotlin("test"))
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
